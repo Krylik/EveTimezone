@@ -1,0 +1,9 @@
+/*
+    Yes, I have an entire css file for one fucking class.
+    Deal with it.
+*/
+
+.container {
+    box-sizing: border-box;
+    margin: 10 10 0 10;
+}
