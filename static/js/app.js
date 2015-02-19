@@ -56,7 +56,6 @@ $('document').ready(function(){
                             }
                             killTimes[hour] += 1;
                         });
-                        console.log(killTimes);
                         // The one thing i've found about highcharts, is that its
                         // axes stuff is kinda weird. It wants tuples. Go figure.
                         var highchartsTimes = [];
