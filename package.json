@@ -30,10 +30,15 @@
             "depends": ["HighchartsAdapter:HighchartsAdapter"],
             "exports": "Highcharts"
         },
-        "HighchartsAdapter": {"exports":"HighchartsAdapter"}
+        "HighchartsAdapter": {"exports":"HighchartsAdapter"},
+        "HighchartsTheme": {
+            "depends": ["Highcharts:Highcharts"],
+            "exports": "HighchartsTheme"
+        }
     },
     "browser": {
         "Highcharts": "./bower_components/highcharts/highcharts.src.js",
-        "HighchartsAdapter": "./bower_components/highcharts/adapters/standalone-framework.src.js"
+        "HighchartsAdapter": "./bower_components/highcharts/adapters/standalone-framework.src.js",
+        "HighchartsTheme": "./bower_components/highcharts/themes/dark-unica.js"
     }
 }

@@ -3,6 +3,16 @@
     Deal with it.
 */
 
+html {
+    background-color: #2a2a2b;
+    color: #FFFFFF;
+}
+
+/* Overridee the pure-form legend font color */
+.pure-form legend {
+    color: #FFFFFF;
+}
+
 .container {
     box-sizing: border-box;
     margin: 10 10 0 10;

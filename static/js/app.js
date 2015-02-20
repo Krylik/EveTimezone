@@ -2,6 +2,8 @@ var entitySearch = require('./entitySearch');
 var zkillSearch = require('./zkillSearch');
 var moment = require('moment');
 var Highcharts = require('Highcharts');
+// This is included but not used, to force it to be browserified.
+var HighchartsTheme = require('HighchartsTheme');
 var $ = require('jquery');
 
 /*
@@ -10,6 +12,9 @@ var $ = require('jquery');
     and just ended up using jQuery, because the other way would have been:
     -1 not enough jQuery.
 */
+
+// Delete the stupid protocol relative font thats inserted by highcharts.
+$('head link[href="//fonts.googleapis.com/css?family=Unica+One"]').remove();
 
 $('document').ready(function(){
     // On search:
