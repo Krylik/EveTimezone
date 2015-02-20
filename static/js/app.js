@@ -1,5 +1,6 @@
 var entitySearch = require('./entitySearch');
 var zkillSearch = require('./zkillSearch');
+var permalink = require('./permalink');
 var moment = require('moment');
 var Highcharts = require('Highcharts');
 // This is included but not used, to force it to be browserified.
@@ -17,16 +18,38 @@ var $ = require('jquery');
 $('head link[href="//fonts.googleapis.com/css?family=Unica+One"]').remove();
 
 $('document').ready(function(){
+    // Set up values from permalink
+    var name = permalink.get('name');
+    if (name) {
+        $('#entityName').val(name);
+    }
+    var type = permalink.get('type');
+    if (type) {
+        $('#entityType').val(type);
+    }
+    // Autosearch if both are set
+    if (name && type) {
+        search();
+    }
     // On search:
-    $('#entitySearchForm').on('submit', function(event) {
+    $('#entitySearchForm').on('submit', search);
+
+    // Main search function
+    function search(event) {
         // Prevent the page reload.
-        event.preventDefault();
+        if (event) {
+            event.preventDefault();
+        }
         // Switch search icon to working icon.
         $('#entitySearchForm button i').removeClass('fa-search').addClass('fa-gears');
         // Get the type of entity we're looking for to pass through to zkill.
         // The eve entity search seems to treat these all the same.
         var entityType = $('#entityType').val();
         var entityName = $('#entityName').val();
+        // Set url using pushState for permalink
+        permalink.set('name', entityName);
+        permalink.set('type', entityType);
+        // Search
         entitySearch(entityName, function(err, entity) {
             if (!err) {
                 if (entity.characterID != 0) {
@@ -81,7 +104,7 @@ $('document').ready(function(){
                                 renderTo: 'chart'
                             },
                             title: {
-                                text: 'Kills and Deaths per hour'
+                                text: 'Kills and Deaths per hour (Combined)'
                             },
                             xAxis: {
                                 allowDecimals: false,
@@ -89,6 +112,9 @@ $('document').ready(function(){
                                     formatter: function () {
                                         return (this.value < 10 ? '0' + this.value : this.value) + ':00';
                                     }
+                                },
+                                title: {
+                                    text: 'Hour of day'
                                 }
                             },
                             yAxis: {
@@ -116,5 +142,5 @@ $('document').ready(function(){
                 $('#entitySearchForm button i').removeClass('fa-gears').addClass('fa-search');
             }
         });
-    });
+    }
 });

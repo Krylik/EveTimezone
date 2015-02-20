@@ -23,16 +23,22 @@
         "xml2js": "^0.4.5"
     },
     "browserify": {
-        "transform": [ "browserify-shim" ]
+        "transform": [
+            "browserify-shim"
+        ]
     },
     "browserify-shim": {
         "Highcharts": {
-            "depends": ["HighchartsAdapter:HighchartsAdapter"],
+            "depends": [
+                "HighchartsAdapter:HighchartsAdapter"
+            ],
             "exports": "Highcharts"
         },
-        "HighchartsAdapter": {"exports":"HighchartsAdapter"},
+        "HighchartsAdapter": "HighchartsAdapter",
         "HighchartsTheme": {
-            "depends": ["Highcharts:Highcharts"],
+            "depends": [
+                "Highcharts:Highcharts"
+            ],
             "exports": "HighchartsTheme"
         }
     },
