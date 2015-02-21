@@ -20,8 +20,17 @@ var permalink = {
     set: function(key, value) {
         var params = this.get();
         params[key] = value;
-        var newQueryString = $.param(params);
+        var newQueryString = this.encode(params);
         history.pushState({}, '', window.location.pathname + '?' + newQueryString);
+    },
+
+    encode: function(obj) {
+        var str = [];
+        for(var p in obj)
+        if (obj.hasOwnProperty(p)) {
+            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        }
+        return str.join("&");
     }
 };
 
