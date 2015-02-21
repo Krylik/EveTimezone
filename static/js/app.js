@@ -2,9 +2,7 @@ var entitySearch = require('./entitySearch');
 var zkillSearch = require('./zkillSearch');
 var permalink = require('./permalink');
 var moment = require('moment');
-var Highcharts = require('Highcharts');
-// This is included but not used, to force it to be browserified.
-var HighchartsTheme = require('HighchartsTheme');
+var chart = require('./chart');
 var $ = require('jquery');
 
 /*
@@ -18,6 +16,7 @@ var $ = require('jquery');
 $('head link[href="//fonts.googleapis.com/css?family=Unica+One"]').remove();
 
 $('document').ready(function(){
+    // This is a little hacky, and I should probably do something better with it
     // Set up values from permalink
     var name = permalink.get('name');
     if (name) {
@@ -42,6 +41,7 @@ $('document').ready(function(){
         }
         // Switch search icon to working icon.
         $('#entitySearchForm button i').removeClass('fa-search').addClass('fa-gears');
+        $('#entitySearchForm button').text('Working...');
         // Get the type of entity we're looking for to pass through to zkill.
         // The eve entity search seems to treat these all the same.
         var entityType = $('#entityType').val();
@@ -59,14 +59,13 @@ $('document').ready(function(){
                         Be nice to the 3rd party volunteers, people...
                         Bandwidth is not free.
 
-                        Another side note: For alliances and corps, this simple approach
-                        probably won't work so well, as you're going to have more
-                        than 200 kills in a day, so you're not going to get a
-                        proper representation of activity over a period.
-                        I would probably need to implement some sort of range,
-                        doing requests for all the kills in a day, for each
-                        of the last 7 days. But I don't want to do too many
-                        requests to zkill, so this will have to do.
+                        I have put in a "high-accuracy" mode, which will make 6
+                        requests to zKill, each for 200 kills/deaths. This means
+                        that it will fetch the last 1200 for an entity, which
+                        should be enough to generate a proper representation.
+                        This mode should be used sparingly, as you can only make
+                        one of these per minute before hitting the request limit
+                        for zKill's api.
                     */
                     var zkilloptions = {
                         no_items: true,
@@ -74,7 +73,15 @@ $('document').ready(function(){
                         limit: 200
                     };
                     zkilloptions[entityType + 'ID'] = entity.characterID;
-                    zkillSearch(zkilloptions, function(err, kills) {
+                    // I'm not actually sure what the w-space modifier does, but it's there.
+                    if ($('#wSpace').is(':checked')) {
+                        zkilloptions['w_space'] = true;
+                    }
+                    var requestCount = 1;
+                    if ($('#highAccuracy').is(':checked')) {
+                        requestCount = 6;
+                    }
+                    zkillSearch(zkilloptions, requestCount, function(err, kills) {
                         // Switch working icon to search icon.
                         $('#entitySearchForm button i').removeClass('fa-gears').addClass('fa-search');
                         // Here we're going to normalize the kill time into hours
@@ -97,119 +104,8 @@ $('document').ready(function(){
                         Object.keys(killTimes).forEach(function(key) {
                             highchartsTimes.push([key, killTimes[key]]);
                         });
-
-                        var chart = new Highcharts.Chart({
-                            chart: {
-                                type: 'area',
-                                renderTo: 'chart'
-                            },
-                            title: {
-                                text: 'Kills and Deaths per hour (Combined)'
-                            },
-                            xAxis: {
-                                allowDecimals: false,
-                                labels: {
-                                    formatter: function () {
-                                        return (this.value < 10 ? '0' + this.value : this.value) + ':00';
-                                    }
-                                },
-                                title: {
-                                    text: 'Hour of day'
-                                },
-                                plotBands: [
-                                    // EU TZ
-                                    {
-                                        from: 17,
-                                        to: 24,
-                                        color: 'rgba(59, 174, 209, 0.2)',
-                                        label: {
-                                            text: 'EU TZ',
-                                            style: {
-                                                color: '#ffffff',
-                                                fontWeight: 'bold'
-                                            }
-                                        }
-                                    },
-                                    {
-                                        from: 0,
-                                        to: 2,
-                                        color: 'rgba(59, 174, 209, 0.2)',
-                                        label: {
-                                            text: 'EU TZ',
-                                            style: {
-                                                color: '#ffffff',
-                                                fontWeight: 'bold'
-                                            }
-                                        }
-                                    },
-                                    // US TZ
-                                    {
-                                        from: 0,
-                                        to: 8,
-                                        color: 'rgba(211, 60, 60, 0.2)',
-                                        label: {
-                                            text: 'US TZ',
-                                            style: {
-                                                color: '#ffffff',
-                                                fontWeight: 'bold'
-                                            }
-                                        }
-                                    },
-                                    {
-                                        from: 22,
-                                        to: 24,
-                                        color: 'rgba(211, 60, 60, 0.2)',
-                                        label: {
-                                            text: 'US TZ',
-                                            style: {
-                                                color: '#ffffff',
-                                                fontWeight: 'bold'
-                                            }
-                                        }
-                                    },
-                                    // AU TZ
-                                    {
-                                        from: 6,
-                                        to: 13,
-                                        color: 'rgba(194, 212, 60, 0.2)',
-                                        label: {
-                                            text: 'AU TZ',
-                                            style: {
-                                                color: '#ffffff',
-                                                fontWeight: 'bold'
-                                            }
-                                        }
-                                    }
-                                ],
-                                plotLines: [{
-                                    color: '#bf3c30',
-                                    width: 2,
-                                    value: parseFloat(moment().utc().hour() + (moment().utc().minute() / 60)),
-                                    label: {
-                                        text: 'Now',
-                                        rotation: 0,
-                                        style: {
-                                            color: '#ffffff',
-                                            fontWeight: 'bold'
-                                        }
-                                    }
-                                }]
-                            },
-                            yAxis: {
-                                title: {
-                                    text: 'Kills per hour'
-                                }
-                            },
-                            plotOptions: {
-                                area: {
-                                    pointStart: 0
-                                }
-                            },
-                            series: [{
-                                name: entityName,
-                                data: highchartsTimes
-                            }]
-                        });
+                        // Make chart.
+                        chart(entityName, highchartsTimes);
                     });
                 } else {
                     console.log("No entity with that name found in Eve");

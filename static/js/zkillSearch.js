@@ -12,8 +12,9 @@
 */
 
 var request = require('superagent');
+var async = require('async');
 
-function zkillSearch(options, callback) {
+function zkillSearch(options, requests, callback) {
     var url = 'https://zkillboard.com/api/';
     Object.keys(options).forEach(function(key) {
         url += key.replace('_', '-') + '/';
@@ -22,16 +23,27 @@ function zkillSearch(options, callback) {
         }
     });
 
-    request
-    .get(url)
-    .accept('application/json')
-    // Luckily superagent deals with compression for us :)
-    .end(function(res) {
-        if (res.ok) {
-            callback(null, res.body);
-        } else {
-            callback(res.text);
-        }
+    // For those unfamiliar with the totally awesome async module:
+    // https://github.com/caolan/async#times
+    async.times(requests, function(n, next) {
+        request
+        // n starts at 0
+        .get(url + 'page/' + (n + 1) + '/')
+        .accept('application/json')
+        // Luckily superagent deals with compression for us :)
+        .end(function(res) {
+            if (res.ok) {
+                next(null, res.body);
+            } else {
+                next(res.text);
+            }
+        });
+    }, function(err, data) {
+        var concatData = [];
+        data.forEach(function(set) {
+            concatData = concatData.concat(set);
+        })
+        callback(err, concatData);
     });
 }
 

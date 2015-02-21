@@ -11,25 +11,44 @@
     </head>
 
     <body>
-        <div class="container" style="margin-top: 10px;">
-            <form id="entitySearchForm" class="pure-form">
-                <fieldset>
-                    <legend>Search <a href="https://zkillboard.com/">zKillboard</a> for timezone activity</legend>
-                    <input type="text" id="entityName" placeholder="Name">
-                    <select name="entityType" id="entityType">
-                        <option value="character" selected>Character</option>
-                        <option value="corporation">Corporation</option>
-                        <option value="alliance">Alliance</option>
-                    </select>
-                    <button type="submit" class="pure-button pure-button-primary">
-                        <i class="fa fa-search"></i>
-                        Search
-                    </button>
-                </fieldset>
-            </form>
+        <div class="page-wrap">
+            <div class="container">
+                <form id="entitySearchForm" class="pure-form">
+                    <fieldset>
+                        <legend>Search <a href="https://zkillboard.com/">zKillboard</a> for timezone activity</legend>
+                        <input type="text" id="entityName" placeholder="Name">
+                        <select name="entityType" id="entityType">
+                            <option value="character" selected>Character</option>
+                            <option value="corporation">Corporation</option>
+                            <option value="alliance">Alliance</option>
+                        </select>
+                        <button type="submit" class="pure-button pure-button-primary">
+                            <i class="fa fa-search"></i>
+                            Search
+                        </button>
+                        <label for="highAccuracy">
+                            <input id="highAccuracy" type="checkbox" value="True"> High Accuracy
+                        </label>
+                        &nbsp;&nbsp;
+                        <label for="wSpace">
+                            <input id="wSpace" type="checkbox" value="True"> W-Space
+                        </label>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="container" id="chart">
+                <!-- The chart goes in here -->
+            </div>
         </div>
-        <div class="container" id="chart">
-            <!-- The chart goes in here -->
-        </div>
+        <footer class="site-footer container">
+            <div style="float: left;">
+                High accuracy mode requires multiple requests to zKillboard. <br />
+                Please don't make more than 1 of these per minute, zKill will shout at me.<br />
+            </div>
+            <div style="float: right; text-align: right;">
+                Donations can be made in game to Krylik Riga.<br />
+                Source on <a href="https://github.com/Krylik/EveTimezone">github</a>.
+            </div>
+        </footer>
     </body>
 </html>
