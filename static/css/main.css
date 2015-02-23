@@ -14,7 +14,7 @@ a:visited {
 
 .page-wrap {
     min-height: 100%;
-    margin-bottom: -50px;
+    margin-bottom: -30px;
 }
 
 .page-wrap:after {
@@ -23,7 +23,7 @@ a:visited {
 }
 
 .site-footer, .page-wrap:after {
-    height: 50px;
+    height: 30px;
     font-size: 12px;
 }
 
@@ -36,4 +36,19 @@ a:visited {
     box-sizing: border-box;
     margin-left: 10px;
     margin-right: 10px;
+}
+
+.error {
+    background-color: #9d2727;
+    padding: 10px;
+    text-shadow: 1px 1px rgba(97, 101, 100, 0.62);
+    height: 36px;
+}
+
+.error span {
+    float: left;
+}
+
+.error i {
+    float: right;
 }

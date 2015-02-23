@@ -15,7 +15,34 @@ var $ = require('jquery');
 // Delete the stupid protocol relative font thats inserted by highcharts.
 $('head link[href="//fonts.googleapis.com/css?family=Unica+One"]').remove();
 
+// Set up events, and load values from query params.
 $('document').ready(function(){
+    // Helper functions
+    // Show the working message and changing the icon
+    function setWorking(isWorking) {
+        if (isWorking) {
+            $('#entitySearchForm button i').removeClass('fa-search').addClass('fa-gears');
+            $('#entitySearchForm button span').text('Working...');
+        } else {
+            $('#entitySearchForm button i').removeClass('fa-gears').addClass('fa-search');
+            $('#entitySearchForm button span').text('Search');
+        }
+    }
+
+    // Showing the error message when something goes wrong.
+    function showError(error) {
+        $('#error span').text(error);
+        $('#error').show(200, function(){
+            setTimeout(function(){
+                $('#error').hide(200);
+            }, 5000);
+        });
+    }
+    // For the close button on the error panel
+    $('#error i').on('click', function(event){
+        $('#error').hide(200);
+    });
+
     // This is a little hacky, and I should probably do something better with it
     // Set up values from permalink
     var name = permalink.get('name');
@@ -40,8 +67,7 @@ $('document').ready(function(){
             event.preventDefault();
         }
         // Switch search icon to working icon.
-        $('#entitySearchForm button i').removeClass('fa-search').addClass('fa-gears');
-        $('#entitySearchForm button').text('Working...');
+        setWorking(true);
         // Get the type of entity we're looking for to pass through to zkill.
         // The eve entity search seems to treat these all the same.
         var entityType = $('#entityType').val();
@@ -82,38 +108,56 @@ $('document').ready(function(){
                         requestCount = 6;
                     }
                     zkillSearch(zkilloptions, requestCount, function(err, kills) {
-                        // Switch working icon to search icon.
-                        $('#entitySearchForm button i').removeClass('fa-gears').addClass('fa-search');
-                        // Here we're going to normalize the kill time into hours
-                        // We need to accumulate before we can normalize for
-                        // highcharts.
-                        var killTimes = {};
-                        // We have to seed this with all the hours, otherwise
-                        // highcharts just makes shit up for the hours that arent
-                        // in the data.
-                        for (var i = 0; i < 24; i++) {
-                            killTimes[i] = 0;
+                        setWorking(false);
+                        if (!err) {
+                            // Here we're going to normalize the kill time into hours
+                            // We need to accumulate before we can normalize for
+                            // highcharts.
+                            var killTimes = {};
+                            // We have to seed this with all the hours, otherwise
+                            // highcharts just makes shit up for the hours that arent
+                            // in the data.
+                            for (var i = 0; i < 24; i++) {
+                                killTimes[i] = 0;
+                            }
+                            kills.forEach(function(kill) {
+                                var hour = moment(kill.killTime).hour();
+                                killTimes[hour] += 1;
+                            });
+                            // The one thing i've found about highcharts, is that its
+                            // axes stuff is kinda weird. It wants tuples. Go figure.
+                            var highchartsTimes = [];
+                            Object.keys(killTimes).forEach(function(key) {
+                                highchartsTimes.push([key, killTimes[key]]);
+                            });
+                            // Make chart.
+                            chart(entityName, highchartsTimes, function(chart) {
+                                // Embed logo or face because i can :)
+                                var typeUpcase = entityType.replace(/\b[a-z]/g, function(letter) {
+                                    return letter.toUpperCase();
+                                });
+                                var imgUrl = typeUpcase + '/' + entity.characterID + '_32';
+                                // For fuck sake :CCPlease:
+                                // Alliance and corps are png, characters are jpg.
+                                imgUrl += entityType == 'character' ? '.jpg' : '.png';
+                                var imgX = chart.legend.group.translateX - 30;
+                                var imgY = chart.legend.group.translateY - 3;
+                                imgUrl = 'https://image.eveonline.com/' + imgUrl;
+                                // I have noticed that this image doesnt move on a resize.
+                                // I may end up removing it, but I'll leave it for now.
+                                chart.renderer.image(imgUrl, imgX, imgY, 32, 32).add();
+                            });
+                        } else {
+                            showError(err);
                         }
-                        kills.forEach(function(kill) {
-                            var hour = moment(kill.killTime).hour();
-                            killTimes[hour] += 1;
-                        });
-                        // The one thing i've found about highcharts, is that its
-                        // axes stuff is kinda weird. It wants tuples. Go figure.
-                        var highchartsTimes = [];
-                        Object.keys(killTimes).forEach(function(key) {
-                            highchartsTimes.push([key, killTimes[key]]);
-                        });
-                        // Make chart.
-                        chart(entityName, highchartsTimes);
                     });
                 } else {
-                    console.log("No entity with that name found in Eve");
-                    $('#entitySearchForm button i').removeClass('fa-gears').addClass('fa-search');
+                    showError("No entity with that name found in Eve");
+                    setWorking(false);
                 }
             } else {
-                console.log(err);
-                $('#entitySearchForm button i').removeClass('fa-gears').addClass('fa-search');
+                showError("An error occurred while searching the Eve api for that entity name");
+                setWorking(false);
             }
         });
     }

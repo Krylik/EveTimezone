@@ -24,7 +24,7 @@
                         </select>
                         <button type="submit" class="pure-button pure-button-primary">
                             <i class="fa fa-search"></i>
-                            Search
+                            <span>Search</span>
                         </button>
                         <label for="highAccuracy">
                             <input id="highAccuracy" type="checkbox" value="True"> High Accuracy
@@ -35,6 +35,11 @@
                         </label>
                     </fieldset>
                 </form>
+            </div>
+            <div class="error container" id="error" style="display: none;">
+                <!-- error messages go here -->
+                <span></span>
+                <i class="fa fa-times"></i>
             </div>
             <div class="container" id="chart">
                 <!-- The chart goes in here -->

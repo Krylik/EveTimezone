@@ -14,7 +14,7 @@
 var request = require('superagent');
 var async = require('async');
 
-function zkillSearch(options, requests, callback) {
+function zkillSearch(options, pages, callback) {
     var url = 'https://zkillboard.com/api/';
     Object.keys(options).forEach(function(key) {
         url += key.replace('_', '-') + '/';
@@ -25,19 +25,24 @@ function zkillSearch(options, requests, callback) {
 
     // For those unfamiliar with the totally awesome async module:
     // https://github.com/caolan/async#times
-    async.times(requests, function(n, next) {
-        request
-        // n starts at 0
-        .get(url + 'page/' + (n + 1) + '/')
-        .accept('application/json')
-        // Luckily superagent deals with compression for us :)
-        .end(function(res) {
-            if (res.ok) {
-                next(null, res.body);
-            } else {
-                next(res.text);
-            }
-        });
+    async.times(pages, function(n, next) {
+        // Delay each request by (n - 1) * 2 seconds
+        // i.e. the first request will be immediate
+        // the next request will happen after 2 sec, next after 4 etc.
+        // This is to prevent hammering the api too hard.
+        setTimeout(function(){
+            request
+            // n starts at 0
+            .get(url + 'page/' + (n + 1) + '/')
+            // Luckily superagent deals with compression for us :)
+            .end(function(res) {
+                if (res.ok) {
+                    next(null, res.body);
+                } else {
+                    next(res.text);
+                }
+            });
+        }, (n - 1) * 2000);
     }, function(err, data) {
         var concatData = [];
         data.forEach(function(set) {

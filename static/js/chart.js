@@ -3,7 +3,7 @@ var Highcharts = require('Highcharts');
 // This is included but not used, to force it to be browserified.
 var HighchartsTheme = require('HighchartsTheme');
 
-function drawChart(name, data) {
+function drawChart(name, data, callback) {
     var chart = new Highcharts.Chart({
         chart: {
             type: 'area',
@@ -115,7 +115,7 @@ function drawChart(name, data) {
             name: name,
             data: data
         }]
-    });
+    }, callback);
 }
 
 module.exports = drawChart;
