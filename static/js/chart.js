@@ -33,20 +33,14 @@ function drawChart(name, data, callback) {
                         style: {
                             color: '#ffffff',
                             fontWeight: 'bold'
-                        }
+                        },
+                        y: 30
                     }
                 },
                 {
                     from: 0,
                     to: 2,
-                    color: 'rgba(59, 174, 209, 0.2)',
-                    label: {
-                        text: 'EU TZ',
-                        style: {
-                            color: '#ffffff',
-                            fontWeight: 'bold'
-                        }
-                    }
+                    color: 'rgba(59, 174, 209, 0.2)'
                 },
                 // US TZ
                 {
@@ -58,20 +52,14 @@ function drawChart(name, data, callback) {
                         style: {
                             color: '#ffffff',
                             fontWeight: 'bold'
-                        }
+                        },
+                        y: 30
                     }
                 },
                 {
                     from: 22,
                     to: 24,
-                    color: 'rgba(211, 60, 60, 0.2)',
-                    label: {
-                        text: 'US TZ',
-                        style: {
-                            color: '#ffffff',
-                            fontWeight: 'bold'
-                        }
-                    }
+                    color: 'rgba(211, 60, 60, 0.2)'
                 },
                 // AU TZ
                 {
@@ -83,7 +71,8 @@ function drawChart(name, data, callback) {
                         style: {
                             color: '#ffffff',
                             fontWeight: 'bold'
-                        }
+                        },
+                        y: 30
                     }
                 }
             ],
