@@ -3,24 +3,27 @@ var Highcharts = require('Highcharts');
 // This is included but not used, to force it to be browserified.
 var HighchartsTheme = require('HighchartsTheme');
 
-function drawChart(name, data, callback) {
+function drawChart(name, intervalsPerHour, data, callback) {
     var chart = new Highcharts.Chart({
         chart: {
-            type: 'area',
+            type: 'areaspline',
             renderTo: 'chart'
         },
         title: {
-            text: 'Kills and Deaths per hour (Combined)'
+            text: 'Kills and Deaths (Combined)'
         },
         xAxis: {
-            allowDecimals: false,
+            allowDecimals: true,
             labels: {
                 formatter: function () {
-                    return (this.value < 10 ? '0' + this.value : this.value) + ':00';
+                    if (this.value % 1 === 0) {
+                        return (this.value < 10 ? '0' + this.value : this.value) + ':00';
+                    }
+                    return '';
                 }
             },
             title: {
-                text: 'Hour of day'
+                text: 'Time of day'
             },
             plotBands: [
                 // EU TZ
@@ -92,7 +95,7 @@ function drawChart(name, data, callback) {
         },
         yAxis: {
             title: {
-                text: 'Kills per hour'
+                text: 'Kills per ' + Math.round(60 / intervalsPerHour, 0) + ' minutes'
             }
         },
         plotOptions: {

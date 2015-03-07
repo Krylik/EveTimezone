@@ -120,18 +120,42 @@ $('document').ready(function(){
                             for (var i = 0; i < 24; i++) {
                                 killTimes[i] = 0;
                             }
+                            var spikeyness = 2; // intervals per hour
                             kills.forEach(function(kill) {
                                 var hour = moment(kill.killTime).hour();
-                                killTimes[hour] += 1;
+                                // We're going to cut the minutes into (60/spikeyness) min increments.
+                                var min = moment(kill.killTime).minute();
+                                var minInterval = Math.round((min / 60 * 100) / (100 / spikeyness)) * (1 / spikeyness); // I want it in n^-spikeyness, so .25 not 25
+                                // Initialize the interval if it doesnt exist.
+                                if (!killTimes[hour + minInterval]) {
+                                    killTimes[hour + minInterval] = 0;
+                                }
+                                killTimes[hour + minInterval] += 1;
                             });
+                            console.log(killTimes);
                             // The one thing i've found about highcharts, is that its
-                            // axes stuff is kinda weird. It wants tuples. Go figure.
+                            // axes stuff is kinda weird. It wants tuples sorted by first element. Go figure.
                             var highchartsTimes = [];
-                            Object.keys(killTimes).forEach(function(key) {
-                                highchartsTimes.push([key, killTimes[key]]);
+                            var intervals = Object.keys(killTimes).map(function(i){
+                                return parseFloat(i);
+                            }).sort(function(a, b) {
+                                // Oh Javascript. Sorting floats by default,
+                                // still puts 10 before 2.
+                                if (a < b) {
+                                    return -1;
+                                } else if (a > b) {
+                                    return 1;
+                                } else {
+                                    return 0;
+                                }
                             });
+                            console.log(intervals);
+                            intervals.forEach(function(key) {
+                                highchartsTimes.push([key, killTimes["" + key]]);
+                            });
+                            console.log(highchartsTimes);
                             // Make chart.
-                            chart(entityName, highchartsTimes, function(chart) {
+                            chart(entityName, spikeyness, highchartsTimes, function(chart) {
                                 // Embed logo or face because i can :)
                                 var typeUpcase = entityType.replace(/\b[a-z]/g, function(letter) {
                                     return letter.toUpperCase();
