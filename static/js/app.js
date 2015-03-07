@@ -117,7 +117,7 @@ $('document').ready(function(){
                             // We have to seed this with all the hours, otherwise
                             // highcharts just makes shit up for the hours that arent
                             // in the data.
-                            for (var i = 0; i < 24; i++) {
+                            for (var i = 0; i < 25; i++) {
                                 killTimes[i] = 0;
                             }
                             var spikeyness = 2; // intervals per hour
@@ -154,7 +154,7 @@ $('document').ready(function(){
                             });
                             
                             if ($('#chart').children().length > 0) {
-                                $('#chart').clone().removeAttr('id').appendTo('#history');
+                                $('#chart').clone().removeAttr('id').prependTo('#history');
                             }
                             // Make chart.
                             chart(entityName, spikeyness, highchartsTimes, function(chart) {
