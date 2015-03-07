@@ -132,7 +132,6 @@ $('document').ready(function(){
                                 }
                                 killTimes[hour + minInterval] += 1;
                             });
-                            console.log(killTimes);
                             // The one thing i've found about highcharts, is that its
                             // axes stuff is kinda weird. It wants tuples sorted by first element. Go figure.
                             var highchartsTimes = [];
@@ -149,11 +148,14 @@ $('document').ready(function(){
                                     return 0;
                                 }
                             });
-                            console.log(intervals);
+                            
                             intervals.forEach(function(key) {
                                 highchartsTimes.push([key, killTimes["" + key]]);
                             });
-                            console.log(highchartsTimes);
+                            
+                            if ($('#chart').children().length > 0) {
+                                $('#chart').clone().removeAttr('id').appendTo('#history');
+                            }
                             // Make chart.
                             chart(entityName, spikeyness, highchartsTimes, function(chart) {
                                 // Embed logo or face because i can :)
