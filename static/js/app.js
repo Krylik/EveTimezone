@@ -173,21 +173,23 @@ $('document').ready(function(){
                             // Make chart.
                             chart(name, spikeyness, highchartsTimes, function(chart) {
                                 // Embed logo or face because i can :)
-                                var typeUpcase = type.replace(/\b[a-z]/g, function(letter) {
-                                    return letter.toUpperCase();
-                                });
-                                var imgUrl = typeUpcase + '/' + entity.characterID + '_32';
-                                // For fuck sake :CCPlease:
-                                // Alliance and corps are png, characters are jpg.
-                                imgUrl += type == 'character' ? '.jpg' : '.png';
-                                var imgX = chart.legend.group.translateX - 30;
-                                var imgY = chart.legend.group.translateY - 3;
-                                imgUrl = 'https://image.eveonline.com/' + imgUrl;
-                                // I have noticed that this image doesnt move on a resize.
-                                // I may end up removing it, but I'll leave it for now.
-                                // Yep, i'll have to remove it when i finally add imgur upload
-                                // because it taints the image source.
-                                chart.renderer.image(imgUrl, imgX, imgY, 32, 32).add();
+                                if (type != 'solarSystem') {
+                                    var typeUpcase = type.replace(/\b[a-z]/g, function(letter) {
+                                        return letter.toUpperCase();
+                                    });
+                                    var imgUrl = typeUpcase + '/' + entity.characterID + '_32';
+                                    // For fuck sake :CCPlease:
+                                    // Alliance and corps are png, characters are jpg.
+                                    imgUrl += type == 'character' ? '.jpg' : '.png';
+                                    var imgX = chart.legend.group.translateX - 30;
+                                    var imgY = chart.legend.group.translateY - 3;
+                                    imgUrl = 'https://image.eveonline.com/' + imgUrl;
+                                    // I have noticed that this image doesnt move on a resize.
+                                    // I may end up removing it, but I'll leave it for now.
+                                    // Yep, i'll have to remove it when i finally add imgur upload
+                                    // because it taints the image source.
+                                    chart.renderer.image(imgUrl, imgX, imgY, 32, 32).add();
+                                }
                                 // Enable Upload to Imgur
                                 // $('#imgurUpload').removeClass('pure-button-disabled').removeAttr('disabled');
                             });
