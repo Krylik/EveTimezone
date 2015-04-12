@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "async": "^0.9.0",
+    "base64-url": "^1.2.1",
     "jquery": "^2.1.3",
     "moment": "^2.9.0",
     "superagent": "^0.21.0",
@@ -47,6 +48,7 @@
   "browser": {
     "Highcharts": "./bower_components/highcharts/highcharts.src.js",
     "HighchartsAdapter": "./bower_components/highcharts/adapters/standalone-framework.src.js",
-    "HighchartsTheme": "./bower_components/highcharts/themes/dark-unica.js"
+    "HighchartsTheme": "./bower_components/highcharts/themes/dark-unica.js",
+    "Svg2Png": "./static/js/saveSvgAsPng.js"
   }
 }

@@ -2,7 +2,9 @@ var entitySearch = require('./entitySearch');
 var zkillSearch = require('./zkillSearch');
 var permalink = require('./permalink');
 var moment = require('moment');
+// var svg2png = require('Svg2Png');
 var chart = require('./chart');
+// var imgur = require('./imgurUpload');
 var $ = require('jquery');
 
 /*
@@ -21,11 +23,11 @@ $('document').ready(function(){
     // Show the working message and changing the icon
     function setWorking(isWorking) {
         if (isWorking) {
-            $('#entitySearchForm button i').removeClass('fa-search').addClass('fa-gears');
-            $('#entitySearchForm button span').text('Working...');
+            $('#searchButton i').removeClass('fa-search').addClass('fa-gear').addClass('fa-spin');
+            $('#searchButton span').text('Working...');
         } else {
-            $('#entitySearchForm button i').removeClass('fa-gears').addClass('fa-search');
-            $('#entitySearchForm button span').text('Search');
+            $('#searchButton i').removeClass('fa-gear').removeClass('fa-spin').addClass('fa-search');
+            $('#searchButton span').text('Search');
         }
     }
 
@@ -57,10 +59,21 @@ $('document').ready(function(){
     if (name && type) {
         search();
     }
+    // On Imgur Upload
+    // $('#imgurUpload').on('click', function(){
+    //     console.log('Clickeed');
+    //     svg2png.saveSvgAsPng($('div.highcharts-container svg')[0], entityId, {}, function(uri) {
+    //         console.log(uri);
+    //         imgur.upload(uri, entityId, name, function(err, data){
+    //             console.log(data);
+    //         });
+    //     });
+    // });
     // On search:
     $('#entitySearchForm').on('submit', search);
 
     // Main search function
+    var entityId;
     function search(event) {
         // Prevent the page reload.
         if (event) {
@@ -70,14 +83,15 @@ $('document').ready(function(){
         setWorking(true);
         // Get the type of entity we're looking for to pass through to zkill.
         // The eve entity search seems to treat these all the same.
-        var entityType = $('#entityType').val();
-        var entityName = $('#entityName').val();
+        type = $('#entityType').val();
+        name = $('#entityName').val();
         // Set url using pushState for permalink
-        permalink.set('name', entityName);
-        permalink.set('type', entityType);
+        permalink.set('name', name);
+        permalink.set('type', type);
         // Search
-        entitySearch(entityName, function(err, entity) {
+        entitySearch(name, function(err, entity) {
             if (!err) {
+                entityId = entity.characterID;
                 if (entity.characterID != 0) {
                     /*
                         Setting the no-items and no-attackers results in a much
@@ -98,7 +112,7 @@ $('document').ready(function(){
                         no_attackers: true,
                         limit: 200
                     };
-                    zkilloptions[entityType + 'ID'] = entity.characterID;
+                    zkilloptions[type + 'ID'] = entity.characterID;
                     // I'm not actually sure what the w-space modifier does, but it's there.
                     if ($('#wSpace').is(':checked')) {
                         zkilloptions['w_space'] = true;
@@ -148,30 +162,34 @@ $('document').ready(function(){
                                     return 0;
                                 }
                             });
-                            
+
                             intervals.forEach(function(key) {
                                 highchartsTimes.push([key, killTimes["" + key]]);
                             });
-                            
+
                             if ($('#chart').children().length > 0) {
                                 $('#chart').clone().removeAttr('id').prependTo('#history');
                             }
                             // Make chart.
-                            chart(entityName, spikeyness, highchartsTimes, function(chart) {
+                            chart(name, spikeyness, highchartsTimes, function(chart) {
                                 // Embed logo or face because i can :)
-                                var typeUpcase = entityType.replace(/\b[a-z]/g, function(letter) {
+                                var typeUpcase = type.replace(/\b[a-z]/g, function(letter) {
                                     return letter.toUpperCase();
                                 });
                                 var imgUrl = typeUpcase + '/' + entity.characterID + '_32';
                                 // For fuck sake :CCPlease:
                                 // Alliance and corps are png, characters are jpg.
-                                imgUrl += entityType == 'character' ? '.jpg' : '.png';
+                                imgUrl += type == 'character' ? '.jpg' : '.png';
                                 var imgX = chart.legend.group.translateX - 30;
                                 var imgY = chart.legend.group.translateY - 3;
                                 imgUrl = 'https://image.eveonline.com/' + imgUrl;
                                 // I have noticed that this image doesnt move on a resize.
                                 // I may end up removing it, but I'll leave it for now.
+                                // Yep, i'll have to remove it when i finally add imgur upload
+                                // because it taints the image source.
                                 chart.renderer.image(imgUrl, imgX, imgY, 32, 32).add();
+                                // Enable Upload to Imgur
+                                // $('#imgurUpload').removeClass('pure-button-disabled').removeAttr('disabled');
                             });
                         } else {
                             showError(err);

@@ -15,7 +15,9 @@ var request = require('superagent');
 var async = require('async');
 
 function zkillSearch(options, pages, callback) {
-    var url = 'https://zkillboard.com/api/';
+    // Switching to eve-kill, as it gives us more kills per request
+    // and more requests per hour.
+    var url = 'https://beta.eve-kill.net/api/combined/';
     Object.keys(options).forEach(function(key) {
         url += key.replace('_', '-') + '/';
         if (options[key] && options[key] !== true) {

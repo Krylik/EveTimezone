@@ -52,3 +52,27 @@ a:visited {
 .error i {
     float: right;
 }
+
+.pure-button-secondary {
+    color: white;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    background: rgb(66, 184, 221);
+}
+
+.hidden-img-bucket {
+    display: none;
+}
+
+.donations a span.donation-info span{
+    color: #6fb0e6;
+    text-decoration: underline;
+    content: 'Donations'
+}
+
+.donations:hover a span.donation-info span{
+    display: none;
+}
+
+.donations:hover a span.donation-info:after{
+    content: 'Donations can be made in game to Krylik Riga';
+}

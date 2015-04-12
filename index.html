@@ -15,14 +15,14 @@
             <div class="container">
                 <form id="entitySearchForm" class="pure-form">
                     <fieldset>
-                        <legend>Search <a href="https://zkillboard.com/">zKillboard</a> for timezone activity</legend>
+                        <legend>Search <a href="https://beta.eve-kill.net/">eve-kill</a> for timezone activity</legend>
                         <input type="text" id="entityName" placeholder="Name">
                         <select name="entityType" id="entityType">
                             <option value="character" selected>Character</option>
                             <option value="corporation">Corporation</option>
                             <option value="alliance">Alliance</option>
                         </select>
-                        <button type="submit" class="pure-button pure-button-primary">
+                        <button type="submit" id="searchButton" class="pure-button pure-button-primary">
                             <i class="fa fa-search"></i>
                             <span>Search</span>
                         </button>
@@ -33,6 +33,10 @@
                         <label for="wSpace">
                             <input id="wSpace" type="checkbox" value="True"> W-Space
                         </label>
+                        <!-- <button type="button" id="imgurUpload" class="pure-button pure-button-secondary pure-button-disabled" disabled style="float: right;">
+                            <i class="fa fa-cloud-upload"></i>
+                            <span>Upload to Imgur</span>
+                        </button> -->
                     </fieldset>
                 </form>
             </div>
@@ -48,13 +52,20 @@
                 <!-- The history of graphs goes here -->
             </div>
         </div>
+        <!-- <div id="hidden-img-bucket" class="hidden-img-bucket">
+            <img id="hidden-img-bucket" src="" alt="">
+        </div> -->
         <footer class="site-footer container">
             <div style="float: left;">
-                High accuracy mode requires multiple requests to zKillboard. <br />
-                Please don't make more than 1 of these per minute, zKill will shout at me.<br />
+                High accuracy mode requires multiple requests to eve-kill.<br />
+                Please don't make more than 1 of these per minute.<br />
             </div>
             <div style="float: right; text-align: right;">
-                Donations can be made in game to Krylik Riga.<br />
+                <div class="donations">
+                    <a href="#">
+                        <span class="donation-info"><span>Donations</span></span>
+                    </a>
+                </div>
                 Source on <a href="https://github.com/Krylik/EveTimezone">github</a>.
             </div>
         </footer>
