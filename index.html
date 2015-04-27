@@ -13,37 +13,43 @@
     <body>
         <div class="page-wrap">
             <div class="container">
-                <form id="entitySearchForm" class="pure-form">
-                    <fieldset>
-                        <h4>Killboard Timezone Search</h4>
-                        <input type="text" id="entityName" placeholder="Name">
-                        <select name="entityType" id="entityType">
-                            <option value="character" selected>Character</option>
-                            <option value="corporation">Corporation</option>
-                            <option value="alliance">Alliance</option>
-                            <option value="solarSystem">Solar System</option>
-                        </select>
-                        <select id="killboard">
-                            <option value="eve-kill" selected>eve-kill</option>
-                            <option value="zkill">zKillboard</option>
-                        </select>
-                        <button type="submit" id="searchButton" class="pure-button pure-button-primary">
-                            <i class="fa fa-search"></i>
-                            <span>Search</span>
-                        </button>
-                        <label for="highAccuracy">
-                            <input id="highAccuracy" type="checkbox" value="True"> High Accuracy
-                        </label>
-                        &nbsp;&nbsp;
-                        <label for="wSpace">
-                            <input id="wSpace" type="checkbox" value="True"> W-Space
-                        </label>
-                        <!-- <button type="button" id="imgurUpload" class="pure-button pure-button-secondary pure-button-disabled" disabled style="float: right;">
-                            <i class="fa fa-cloud-upload"></i>
-                            <span>Upload to Imgur</span>
-                        </button> -->
-                    </fieldset>
-                </form>
+                <div class="pure-g">
+                    <div class="pure-u-1-4">
+                        <h2 style="margin-top: 13px;">Killboard Timezone Search</h2>
+                    </div>
+                    <div class="pure-u-3-4">
+                        <form id="entitySearchForm" class="pure-form">
+                            <fieldset>
+                                <input type="text" id="entityName" placeholder="Name">
+                                <select name="entityType" id="entityType">
+                                    <option value="character" selected>Character</option>
+                                    <option value="corporation">Corporation</option>
+                                    <option value="alliance">Alliance</option>
+                                    <option value="solarSystem">Solar System</option>
+                                </select>
+                                <select id="killboard">
+                                    <option value="eve-kill" selected>eve-kill</option>
+                                    <option value="zkill">zKillboard</option>
+                                </select>
+                                <button type="submit" id="searchButton" class="pure-button pure-button-primary">
+                                    <i class="fa fa-search"></i>
+                                    <span>Search</span>
+                                </button>
+                                <label for="highAccuracy">
+                                    <input id="highAccuracy" type="checkbox" value="True"> High Accuracy
+                                </label>
+                                &nbsp;&nbsp;
+                                <label for="wSpace">
+                                    <input id="wSpace" type="checkbox" value="True"> W-Space
+                                </label>
+                                <!-- <button type="button" id="imgurUpload" class="pure-button pure-button-secondary pure-button-disabled" disabled style="float: right;">
+                                    <i class="fa fa-cloud-upload"></i>
+                                    <span>Upload to Imgur</span>
+                                </button> -->
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div class="error container" id="error" style="display: none;">
                 <!-- error messages go here -->
