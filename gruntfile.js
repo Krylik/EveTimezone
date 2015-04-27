@@ -16,7 +16,9 @@ module.exports = function(grunt) {
             client: {
                 src: ['static/js/app.js'],
                 dest: 'static/app.js',
-                options: {}
+                options: {
+                    transform: [require('grunt-react').browserify]
+                }
             }
         }
     });

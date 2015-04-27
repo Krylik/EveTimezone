@@ -3,14 +3,14 @@ var Highcharts = require('Highcharts');
 // This is included but not used, to force it to be browserified.
 var HighchartsTheme = require('HighchartsTheme');
 
-function drawChart(name, intervalsPerHour, data, callback) {
+function drawChart(name, killboard, intervalsPerHour, data, callback) {
     var chart = new Highcharts.Chart({
         chart: {
             type: 'areaspline',
             renderTo: 'chart'
         },
         title: {
-            text: 'Kills and Deaths (Combined)'
+            text: 'Kills and Deaths (Combined) from ' + killboard
         },
         xAxis: {
             allowDecimals: true,

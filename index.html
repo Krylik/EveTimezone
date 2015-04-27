@@ -15,13 +15,17 @@
             <div class="container">
                 <form id="entitySearchForm" class="pure-form">
                     <fieldset>
-                        <legend>Search <a href="https://beta.eve-kill.net/">eve-kill</a> for timezone activity</legend>
+                        <h4>Killboard Timezone Search</h4>
                         <input type="text" id="entityName" placeholder="Name">
                         <select name="entityType" id="entityType">
                             <option value="character" selected>Character</option>
                             <option value="corporation">Corporation</option>
                             <option value="alliance">Alliance</option>
                             <option value="solarSystem">Solar System</option>
+                        </select>
+                        <select id="killboard">
+                            <option value="eve-kill" selected>eve-kill</option>
+                            <option value="zkill">zKillboard</option>
                         </select>
                         <button type="submit" id="searchButton" class="pure-button pure-button-primary">
                             <i class="fa fa-search"></i>

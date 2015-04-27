@@ -1,10 +1,12 @@
 var entitySearch = require('./entitySearch');
-var zkillSearch = require('./zkillSearch');
+var killSearch = require('./killSearch');
 var permalink = require('./permalink');
 var moment = require('moment');
 // var svg2png = require('Svg2Png');
 var chart = require('./chart');
+var KillStats = require('./components/killstats.jsx');
 // var imgur = require('./imgurUpload');
+var React = require('react');
 var $ = require('jquery');
 
 /*
@@ -55,6 +57,10 @@ $('document').ready(function(){
     if (type) {
         $('#entityType').val(type);
     }
+    var type = permalink.get('killboard');
+    if (type) {
+        $('#killboard').val(type);
+    }
     // Autosearch if both are set
     if (name && type) {
         search();
@@ -85,9 +91,11 @@ $('document').ready(function(){
         // The eve entity search seems to treat these all the same.
         type = $('#entityType').val();
         name = $('#entityName').val();
+        killboard = $('#killboard').val();
         // Set url using pushState for permalink
         permalink.set('name', name);
         permalink.set('type', type);
+        permalink.set('killboard', killboard);
         // Search
         entitySearch(name, function(err, entity) {
             if (!err) {
@@ -100,19 +108,18 @@ $('document').ready(function(){
                         Bandwidth is not free.
 
                         I have put in a "high-accuracy" mode, which will make 6
-                        requests to zKill, each for 200 kills/deaths. This means
-                        that it will fetch the last 1200 for an entity, which
-                        should be enough to generate a proper representation.
-                        This mode should be used sparingly, as you can only make
-                        one of these per minute before hitting the request limit
-                        for zKill's api.
+                        requests per chart. This means that it will fetch enough
+                        that it should be able to generate a proper representation.
+                        This mode should be used sparingly, as you can quickly
+                        exhaust your requests per minute especially with zkill.
                     */
-                    var zkilloptions = {
+                    var killoptions = {
+                        killboard: killboard,
                         no_items: true,
                         no_attackers: true,
-                        limit: 200
+                        limit: 1000
                     };
-                    zkilloptions[type + 'ID'] = entity.characterID;
+                    killoptions[type + 'ID'] = entity.characterID;
                     // I'm not actually sure what the w-space modifier does, but it's there.
                     if ($('#wSpace').is(':checked')) {
                         zkilloptions['w_space'] = true;
@@ -121,7 +128,7 @@ $('document').ready(function(){
                     if ($('#highAccuracy').is(':checked')) {
                         requestCount = 6;
                     }
-                    zkillSearch(zkilloptions, requestCount, function(err, kills) {
+                    killSearch(killoptions, requestCount, function(err, kills) {
                         setWorking(false);
                         if (!err) {
                             // Here we're going to normalize the kill time into hours
@@ -171,7 +178,7 @@ $('document').ready(function(){
                                 $('#chart').clone().removeAttr('id').prependTo('#history');
                             }
                             // Make chart.
-                            chart(name, spikeyness, highchartsTimes, function(chart) {
+                            chart(name, killboard, spikeyness, highchartsTimes, function(chart) {
                                 // Embed logo or face because i can :)
                                 if (type != 'solarSystem') {
                                     var typeUpcase = type.replace(/\b[a-z]/g, function(letter) {
@@ -192,6 +199,10 @@ $('document').ready(function(){
                                 }
                                 // Enable Upload to Imgur
                                 // $('#imgurUpload').removeClass('pure-button-disabled').removeAttr('disabled');
+                                // Add stats
+                                $('#chart').append($('<div>').attr('id', 'killstats'));
+                                var stats = React.render(<KillStats />, document.getElementById('killstats'));
+                                stats.setProps({kills: kills});
                             });
                         } else {
                             showError(err);
