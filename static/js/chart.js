@@ -8,7 +8,8 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
         chart: {
             renderTo: 'chart',
             zoomType: 'xy',
-            height: 600
+            height: 600,
+            alignTicks: false,
         },
         title: {
             text: 'Kills and Deaths from ' + killboard
@@ -102,7 +103,7 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 labels: {
                     format: '{value}',
                 },
-                maxPadding: 0.01,
+                maxPadding: 0.01
             },
             {
                 title: {
@@ -115,6 +116,7 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 opposite: true,
                 min: 0,
                 maxPadding: 0.01,
+                gridLineWidth: 0
             }
         ],
         series: [
@@ -123,6 +125,8 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 type: 'areaspline',
                 color: '#32956e',
                 yaxis: 0,
+                stack: 'kills',
+                stacking: 'normal',
                 pointStart: 0,
                 fillOpacity: 0.4,
                 data: data.kills.numbers,
@@ -137,6 +141,8 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 type: 'areaspline',
                 color: '#cd4a4a',
                 yaxis: 0,
+                stack: 'kills',
+                stacking: 'normal',
                 pointStart: 0,
                 fillOpacity: 0.4,
                 data: data.deaths.numbers,
