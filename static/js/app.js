@@ -135,11 +135,15 @@ $('document').ready(function(){
                             // We need to accumulate before we can normalize for
                             // highcharts.
                             var killTimes = {};
+                            var deathTimes = {};
+                            var killValue = {};
+                            var deathValue = {};
                             // We have to seed this with all the hours, otherwise
                             // highcharts just makes shit up for the hours that arent
                             // in the data.
                             for (var i = 0; i < 25; i++) {
                                 killTimes[i] = 0;
+                                deathTimes[i] = 0;
                             }
                             var spikeyness = 2; // intervals per hour
                             kills.forEach(function(kill) {
@@ -147,20 +151,39 @@ $('document').ready(function(){
                                 // We're going to cut the minutes into (60/spikeyness) min increments.
                                 var min = moment(kill.killTime).minute();
                                 var minInterval = Math.round((min / 60 * 100) / (100 / spikeyness)) * (1 / spikeyness); // I want it in n^-spikeyness, so .25 not 25
-                                // Initialize the interval if it doesnt exist.
-                                if (!killTimes[hour + minInterval]) {
-                                    killTimes[hour + minInterval] = 0;
+
+                                switch (type) {
+                                    case 'alliance' :
+                                    case 'corporation' :
+                                    case 'character': {
+                                        if (kill.victim[type + 'ID'] == entity.characterID) {
+                                            if (!deathTimes[hour + minInterval]) {
+                                                deathTimes[hour + minInterval] = 0;
+                                            }
+                                            deathTimes[hour + minInterval] += 1;
+                                            if (!deathValue[hour + minInterval]) {
+                                                deathValue[hour + minInterval] = 0;
+                                            }
+                                            deathValue[hour + minInterval] += parseFloat(kill.zkb.totalValue) / 1000000;
+                                        } else {
+                                            if (!killTimes[hour + minInterval]) {
+                                                killTimes[hour + minInterval] = 0;
+                                            }
+                                            killTimes[hour + minInterval] += 1;
+                                            if (!killValue[hour + minInterval]) {
+                                                killValue[hour + minInterval] = 0;
+                                            }
+                                            killValue[hour + minInterval] += parseFloat(kill.zkb.totalValue) / 1000000;
+                                        }
+                                        break;
+                                    }
                                 }
-                                killTimes[hour + minInterval] += 1;
                             });
-                            // The one thing i've found about highcharts, is that its
-                            // axes stuff is kinda weird. It wants tuples sorted by first element. Go figure.
-                            var highchartsTimes = [];
-                            var intervals = Object.keys(killTimes).map(function(i){
-                                return parseFloat(i);
-                            }).sort(function(a, b) {
-                                // Oh Javascript. Sorting floats by default,
-                                // still puts 10 before 2.
+
+                            function simpleSort(a, b) {
+                                // Oh Javascript.
+                                // > Sorting floats by default
+                                // > still puts 10 before 2.
                                 if (a < b) {
                                     return -1;
                                 } else if (a > b) {
@@ -168,17 +191,56 @@ $('document').ready(function(){
                                 } else {
                                     return 0;
                                 }
+                            }
+
+                            var hcKillTimes = [];
+                            var hcDeathTimes = [];
+                            var hcKillValue = [];
+                            var hcDeathValue = [];
+                            // The one thing i've found about highcharts, is that its
+                            // axes stuff is kinda weird. It wants tuples sorted by first element. Go figure.
+                            // Generate all the intervals
+                            // I need to refactor these structures... could be much more efficient.
+                            Object.keys(killTimes).map(function(i){
+                                return parseFloat(i);
+                            }).sort(simpleSort).map(function(key) {
+                                hcKillTimes.push([key, killTimes["" + key]]);
+                            });
+                            // Values
+                            Object.keys(killValue).map(function(i){
+                                return parseFloat(i);
+                            }).sort(simpleSort).map(function(key) {
+                                hcKillValue.push([key, killValue["" + key]]);
                             });
 
-                            intervals.forEach(function(key) {
-                                highchartsTimes.push([key, killTimes["" + key]]);
+                            Object.keys(deathTimes).map(function(i){
+                                return parseFloat(i);
+                            }).sort(simpleSort).map(function(key) {
+                                hcDeathTimes.push([key, deathTimes["" + key]]);
+                            });
+                            // Values
+                            Object.keys(deathValue).map(function(i){
+                                return parseFloat(i);
+                            }).sort(simpleSort).map(function(key) {
+                                hcDeathValue.push([key, deathValue["" + key]]);
                             });
 
+                            // Add existing chart to history if there is one
                             if ($('#chart').children().length > 0) {
                                 $('#chart').clone().removeAttr('id').prependTo('#history');
                             }
+                            var data = {
+                                kills: {
+                                    numbers: hcKillTimes,
+                                    values: hcKillValue
+                                },
+                                deaths: {
+                                    numbers: hcDeathTimes,
+                                    values: hcDeathValue
+                                }
+                            };
                             // Make chart.
-                            chart(name, killboard, spikeyness, highchartsTimes, function(chart) {
+                            chart(name, killboard, spikeyness, data, function(chart) {
                                 // Embed logo or face because i can :)
                                 if (type != 'solarSystem') {
                                     var typeUpcase = type.replace(/\b[a-z]/g, function(letter) {

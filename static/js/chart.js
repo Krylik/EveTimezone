@@ -6,11 +6,12 @@ var HighchartsTheme = require('HighchartsTheme');
 function drawChart(name, killboard, intervalsPerHour, data, callback) {
     var chart = new Highcharts.Chart({
         chart: {
-            type: 'areaspline',
-            renderTo: 'chart'
+            renderTo: 'chart',
+            zoomType: 'xy',
+            height: 600
         },
         title: {
-            text: 'Kills and Deaths (Combined) from ' + killboard
+            text: 'Kills and Deaths from ' + killboard
         },
         xAxis: {
             allowDecimals: true,
@@ -93,20 +94,88 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 }
             }]
         },
-        yAxis: {
-            title: {
-                text: 'Kills per ' + Math.round(60 / intervalsPerHour, 0) + ' minutes'
+        yAxis: [
+            {
+                title: {
+                    text: 'Kills/Deaths'
+                },
+                labels: {
+                    format: '{value}',
+                }
+            },
+            {
+                title: {
+                    text: 'ISK Killed/Lost'
+                },
+                labels: {
+                    format: '{value}M',
+                    formatter: function() { return this.value.toFixed(0); }
+                },
+                opposite: true,
+                min: 0,
+                maxPadding: 0.01,
             }
-        },
+        ],
         plotOptions: {
             area: {
-                pointStart: 0
+                pointStart: 0,
+                fillOpacity: 0.4
             }
         },
-        series: [{
-            name: name,
-            data: data
-        }]
+        series: [
+            {
+                name: name + ' Kills',
+                type: 'areaspline',
+                color: '#32956e',
+                yaxis: 0,
+                data: data.kills.numbers,
+                tooltip: {
+                    headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>',
+                    pointFormat: '{series.name}: <b>{point.y}</b><br/>',
+                    valueSuffix: ' kills'
+                }
+            },
+            {
+                name: name + ' Deaths',
+                type: 'areaspline',
+                color: '#cd4a4a',
+                yaxis: 0,
+                data: data.deaths.numbers,
+                tooltip: {
+                    headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>',
+                    pointFormat: '{series.name}: <b>{point.y}</b><br/>',
+                    valueSuffix: ' kills'
+                }
+            },
+            {
+                name: name + ' ISK Killed',
+                type: 'spline',
+                yAxis: 1,
+                color: '#029857',
+                data: data.kills.values,
+                pointStart: 0,
+                tooltip: {
+                    headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>',
+                    pointFormat: '{series.name}: <b>{point.y}</b><br/>',
+                    valueSuffix: 'M ISK',
+                    valueDecimals: 0
+                }
+            },
+            {
+                name: name + ' ISK Lost',
+                type: 'spline',
+                yAxis: 1,
+                color: '#ce1515',
+                data: data.deaths.values,
+                pointStart: 0,
+                tooltip: {
+                    headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>',
+                    pointFormat: '{series.name}: <b>{point.y}</b><br/>',
+                    valueSuffix: 'M ISK',
+                    valueDecimals: 0
+                }
+            }
+        ]
     }, callback);
 }
 
