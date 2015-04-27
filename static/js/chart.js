@@ -101,7 +101,8 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 },
                 labels: {
                     format: '{value}',
-                }
+                },
+                maxPadding: 0.01,
             },
             {
                 title: {
@@ -116,18 +117,14 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 maxPadding: 0.01,
             }
         ],
-        plotOptions: {
-            area: {
-                pointStart: 0,
-                fillOpacity: 0.4
-            }
-        },
         series: [
             {
                 name: name + ' Kills',
                 type: 'areaspline',
                 color: '#32956e',
                 yaxis: 0,
+                pointStart: 0,
+                fillOpacity: 0.4,
                 data: data.kills.numbers,
                 tooltip: {
                     headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>',
@@ -140,6 +137,8 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 type: 'areaspline',
                 color: '#cd4a4a',
                 yaxis: 0,
+                pointStart: 0,
+                fillOpacity: 0.4,
                 data: data.deaths.numbers,
                 tooltip: {
                     headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>',
@@ -151,28 +150,36 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 name: name + ' ISK Killed',
                 type: 'spline',
                 yAxis: 1,
-                color: '#029857',
+                color: '#1b41ca',
                 data: data.kills.values,
+                dashStyle: 'ShortDash',
                 pointStart: 0,
                 tooltip: {
                     headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>',
                     pointFormat: '{series.name}: <b>{point.y}</b><br/>',
                     valueSuffix: 'M ISK',
                     valueDecimals: 0
+                },
+                marker: {
+                    enabled: false
                 }
             },
             {
                 name: name + ' ISK Lost',
                 type: 'spline',
                 yAxis: 1,
-                color: '#ce1515',
+                color: '#d06c15',
                 data: data.deaths.values,
+                dashStyle: 'ShortDash',
                 pointStart: 0,
                 tooltip: {
                     headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>',
                     pointFormat: '{series.name}: <b>{point.y}</b><br/>',
                     valueSuffix: 'M ISK',
                     valueDecimals: 0
+                },
+                marker: {
+                    enabled: false
                 }
             }
         ]
