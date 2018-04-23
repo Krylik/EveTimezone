@@ -1,14 +1,18 @@
 var request = require('superagent');
 var async = require('async');
 
-function killSearch(options, pages, callback) {
+function killSearch(options, pages, callback, progress) {
     // Adding option to select killboard.
     var urls = {
-        'zkill': 'https://zkillboard.com/api/',
-        'eve-kill': 'https://beta.eve-kill.net/api/combined/'
+        'zkill': 'https://zkillboard.com/api/'
     }
     var url = urls[options['killboard']];
     delete options['killboard'];
+    if (options['solar_systemID']) {
+        options['solarSystemID'] = options['solar_systemID'];
+        delete options['solar_systemID'];
+    }
+
     Object.keys(options).forEach(function(key) {
         url += key.replace('_', '-') + '/';
         if (options[key] && options[key] !== true) {
@@ -18,22 +22,26 @@ function killSearch(options, pages, callback) {
 
     // For those unfamiliar with the totally awesome async module:
     // https://github.com/caolan/async#times
+    var finished = 0;
     async.times(pages, function(n, next) {
         // Delay each request by (n - 1) * 2 seconds
         // i.e. the first request will be immediate
         // the next request will happen after 2 sec, next after 4 etc.
         // This is to prevent hammering the api too hard.
         setTimeout(function(){
-            request
-            // n starts at 0
-            .get(url + 'page/' + (n + 1) + '/')
-            // Luckily superagent deals with compression for us :)
-            .end(function(res) {
-                if (res.ok) {
-                    next(null, res.body);
-                } else {
-                    next(res.text);
+            fetch(url + 'page/' + (n + 1) + '/')
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(j) {
+                finished += 1;
+                if (progress) {
+                    progress(Math.round(finished / pages * 100));
                 }
+                return next(null, j);
+            })
+            .catch(function(e) {
+                console.error(e);
             });
         }, (n - 1) * 2000);
     }, function(err, data) {

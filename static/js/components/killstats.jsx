@@ -1,11 +1,11 @@
 var React = require('react');
 var moment = require('moment');
 
-var KillStats = React.createClass({
-    render: function() {
+class KillStats extends React.Component {
+    render() {
         if (this.props.kills) {
-            var lastKill = this.props.kills[0].killTime;
-            var firstKill = this.props.kills[this.props.kills.length-1].killTime;
+            var lastKill = this.props.kills[0].killmail_time;
+            var firstKill = this.props.kills[this.props.kills.length-1].killmail_time;
             var killCount = this.props.kills.length;
             return (
                 <div className="pure-g" style={{padding: 5, marginBottom: 10}}>
@@ -20,6 +20,6 @@ var KillStats = React.createClass({
             );
         }
     }
-});
+}
 
 module.exports = KillStats;

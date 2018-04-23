@@ -1,26 +1,27 @@
 var request = require('superagent');
-var parseString = require('xml2js').parseString
+var $ = require('jquery');
 
-function EntitySearch(entityNames, callback) {
-    var searchUrl = 'https://api.eveonline.com/eve/CharacterID.xml.aspx';
+function EntitySearch(entityType, entityName, callback) {
+    var searchUrl = 'https://esi.tech.ccp.is/v2/search/';
 
-    request
-    .get(searchUrl)
-    .query({names: entityNames})
-    .end(function(res) {
-        if (res.ok) {
-            parseString(res.text, function(err, result) {
-                if (err) {
-                    callback(err);
-                } else {
-                    var entity = result.eveapi.result[0].rowset[0].row[0].$;
-                    callback(null, entity);
-                }
-            });
+    fetch('https://esi.tech.ccp.is/dev/search/?' + $.param({
+        categories: entityType,
+        search: entityName,
+        strict: true
+    }))
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(j) {
+        if (j[entityType].length > 0) {
+            callback(null, j[entityType][0]);
         } else {
-            callback(res.text);
+            callback("No entity with that name found in Eve");
         }
-    });
+    })
+    .catch(function(err) {
+        callback("An error occurred while searching the Eve api for that entity name");
+    })
 }
 
 module.exports = EntitySearch;

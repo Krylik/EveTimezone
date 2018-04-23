@@ -6,7 +6,6 @@
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 static/app.js
-static/dist.min.js
 build
 
 # Dependency directory

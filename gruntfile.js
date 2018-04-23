@@ -1,11 +1,14 @@
-module.exports = function(grunt) {
 
+
+module.exports = function(grunt) {
+    require('load-grunt-tasks')(grunt);
     // Project config.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         uglify: {
             options: {
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+                sourceMap: true
             },
             build: {
                 src: 'static/app.js',
@@ -13,20 +16,19 @@ module.exports = function(grunt) {
             }
         },
         browserify: {
-            client: {
-                src: ['static/js/app.js'],
-                dest: 'static/app.js',
+            dist: {
                 options: {
-                    transform: [require('grunt-react').browserify]
-                }
+                    browserifyOptions: {
+                        debug: true
+                    },
+                    debug: true,
+                    transform: [['babelify', {presets: ['env', 'react']}]]
+                },
+                src: ['static/js/app.js'],
+                dest: 'static/app.js'
             }
         }
     });
 
-    // Load the plugin that provides the "uglify" task.
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    // Load the plugin for browserifying the modules.
-    grunt.loadNpmTasks('grunt-browserify');
-    // Default tasks.
     grunt.registerTask('default', ['browserify', 'uglify']);
 };
