@@ -4,7 +4,7 @@ var $ = require('jquery');
 function EntitySearch(entityType, entityName, callback) {
     var searchUrl = 'https://esi.tech.ccp.is/v2/search/';
 
-    fetch('https://esi.tech.ccp.is/dev/search/?' + $.param({
+    fetch('https://esi.tech.ccp.is/v2/search/?' + $.param({
         categories: entityType,
         search: entityName,
         strict: true
@@ -20,6 +20,7 @@ function EntitySearch(entityType, entityName, callback) {
         }
     })
     .catch(function(err) {
+        console.log(err);
         callback("An error occurred while searching the Eve api for that entity name");
     })
 }

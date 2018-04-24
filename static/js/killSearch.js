@@ -43,7 +43,7 @@ function killSearch(options, pages, callback, progress) {
             .catch(function(e) {
                 console.error(e);
             });
-        }, (n - 1) * 2000);
+        }, (n - 1) * 500);
     }, function(err, data) {
         var concatData = [];
         data.forEach(function(set) {

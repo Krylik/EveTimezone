@@ -3,6 +3,33 @@ var Highcharts = require('Highcharts');
 // This is included but not used, to force it to be browserified.
 var HighchartsTheme = require('HighchartsTheme');
 
+function numberFormat(n) {
+    var ranges = [
+        {div: 1e12, suf: 'T'},
+        {div: 1e9, suf: 'B'},
+        {div: 1e6, suf: 'M'},
+        {div: 1e3, suf: 'K'}
+    ];
+    var value = n;
+    var suffix = '';
+    for (var i = 0; i < ranges.length; i++) {
+        if (n >= ranges[i].div) {
+            value = n / ranges[i].div;
+            suffix = ranges[i].suf;
+            break;
+        }
+    }
+    return {
+        value: value,
+        suffix: suffix
+    }
+}
+
+function formatISK() {
+    var formatted = numberFormat(this.y);
+    return this.series.name + ': <b>' + formatted.value.toFixed(2) + '</b> ' + formatted.suffix + '<br/>';
+}
+
 function drawChart(name, killboard, intervalsPerHour, data, callback) {
     var chart = new Highcharts.Chart({
         chart: {
@@ -110,8 +137,10 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                     text: 'ISK Killed/Lost'
                 },
                 labels: {
-                    format: '{value}M',
-                    formatter: function() { return this.value.toFixed(0); }
+                    formatter: function() {
+                        var formatted = numberFormat(this.value);
+                        return formatted.value.toFixed(0) + ' ' + formatted.suffix;
+                    }
                 },
                 opposite: true,
                 min: 0,
@@ -125,8 +154,8 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 type: 'areaspline',
                 color: '#32956e',
                 yaxis: 0,
-                stack: 'kills',
-                stacking: 'normal',
+                // stack: 'kills',
+                // stacking: 'normal',
                 pointStart: 0,
                 fillOpacity: 0.4,
                 data: data.kills.numbers,
@@ -141,15 +170,15 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 type: 'areaspline',
                 color: '#cd4a4a',
                 yaxis: 0,
-                stack: 'kills',
-                stacking: 'normal',
+                // stack: 'kills',
+                // stacking: 'normal',
                 pointStart: 0,
                 fillOpacity: 0.4,
                 data: data.deaths.numbers,
                 tooltip: {
                     headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>',
                     pointFormat: '{series.name}: <b>{point.y}</b><br/>',
-                    valueSuffix: ' kills'
+                    valueSuffix: ' deaths'
                 }
             },
             {
@@ -162,8 +191,8 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 pointStart: 0,
                 tooltip: {
                     headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>',
-                    pointFormat: '{series.name}: <b>{point.y}</b><br/>',
-                    valueSuffix: 'M ISK',
+                    pointFormatter: formatISK,
+                    valueSuffix: ' ISK',
                     valueDecimals: 0
                 },
                 marker: {
@@ -180,8 +209,8 @@ function drawChart(name, killboard, intervalsPerHour, data, callback) {
                 pointStart: 0,
                 tooltip: {
                     headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>',
-                    pointFormat: '{series.name}: <b>{point.y}</b><br/>',
-                    valueSuffix: 'M ISK',
+                    pointFormatter: formatISK,
+                    valueSuffix: ' ISK',
                     valueDecimals: 0
                 },
                 marker: {

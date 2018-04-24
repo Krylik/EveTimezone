@@ -118,7 +118,7 @@ $('document').ready(function(){
                 killoptions[type + 'ID'] = entityId;
                 // I'm not actually sure what the w-space modifier does, but it's there.
                 if ($('#wSpace').is(':checked')) {
-                    zkilloptions['w_space'] = true;
+                    killoptions['w_space'] = true;
                 }
                 var requestCount = 5;
                 if ($('#highAccuracy').is(':checked')) {
@@ -155,7 +155,7 @@ $('document').ready(function(){
                                 if (!deathValue[hour + minInterval]) {
                                     deathValue[hour + minInterval] = 0;
                                 }
-                                deathValue[hour + minInterval] += parseFloat(kill.zkb.totalValue) / 1000000;
+                                deathValue[hour + minInterval] += parseFloat(kill.zkb.totalValue);
                             } else {
                                 if (!killTimes[hour + minInterval]) {
                                     killTimes[hour + minInterval] = 0;
@@ -164,7 +164,7 @@ $('document').ready(function(){
                                 if (!killValue[hour + minInterval]) {
                                     killValue[hour + minInterval] = 0;
                                 }
-                                killValue[hour + minInterval] += parseFloat(kill.zkb.totalValue) / 1000000;
+                                killValue[hour + minInterval] += parseFloat(kill.zkb.totalValue);
                             }
                         });
 

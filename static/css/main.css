@@ -74,5 +74,6 @@ a:visited {
 }
 
 .donations:hover a span.donation-info:after{
+    color: #6fb0e6;
     content: 'Donations can be made in game to Krylik Riga';
 }
